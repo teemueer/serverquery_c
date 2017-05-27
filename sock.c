@@ -4,27 +4,27 @@
 #include <arpa/inet.h>
 
 struct Info {
-        char address[22];
-        int protocol;
-        char hostname[256];
-        char map[32];
-        char gamedir[32];
-        char gamedesc[256];
-        short appid;
-        int numplayers;
-        int maxplayers;
-        int numbots;
-        int servertype;
-        int os;
-        int password;
-        int secure;
+    char address[22];
+    int protocol;
+    char hostname[256];
+    char map[32];
+    char gamedir[32];
+    char gamedesc[256];
+    short appid;
+    int numplayers;
+    int maxplayers;
+    int numbots;
+    int servertype;
+    int os;
+    int password;
+    int secure;
 
-        char link[256];
-        char downloadlink[256];
-        long version;
-        long size;
-        int gametype;
-        int gamedll;
+    char link[256];
+    char downloadlink[256];
+    long version;
+    long size;
+    int gametype;
+    int gamedll;
 };
 
 void get_byte(int *dst, char src, int *idx)
@@ -42,8 +42,8 @@ void get_short(short *dst, char *src, int *idx)
 
 void get_long(long *dst, char *src, int *idx)
 {
-        *dst = *(long*)&src[*idx];
-        *idx += 4;
+    *dst = *(long*)&src[*idx];
+    *idx += 4;
 }
 
 void get_string(char dst[], char src[], int *idx)
@@ -54,21 +54,21 @@ void get_string(char dst[], char src[], int *idx)
 
 int get_sock(char *ip, int port)
 {
-        int sock;
-        struct sockaddr_in server;
+    int sock;
+    struct sockaddr_in server;
 
     struct timeval tv;
     tv.tv_sec = 1;
     tv.tv_usec = 0;
-        sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-        setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
+    sock = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
+    setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char*)&tv,sizeof(struct timeval));
 
     server.sin_addr.s_addr = inet_addr(ip);
-        server.sin_family = AF_INET;
-        server.sin_port = htons(port);
+    server.sin_family = AF_INET;
+    server.sin_port = htons(port);
 
-        connect(sock, (struct sockaddr *)&server, sizeof(server));
-        return sock;
+    connect(sock, (struct sockaddr *)&server, sizeof(server));
+    return sock;
 }
 
 struct Info server_query(char ip[], int port)
@@ -79,15 +79,15 @@ struct Info server_query(char ip[], int port)
     int sock = get_sock(ip, port);
 
     char msg[] = "\xFF\xFF\xFF\xFF\x54Source Engine Query";
-        send(sock, msg, 25, 0);
+    send(sock, msg, 25, 0);
 
     char buf[2048];
-        int res_len = recv(sock, buf, 2048, 0);
+    int res_len = recv(sock, buf, 2048, 0);
 
     if (res_len < 4)
         return info;
 
-        int header = buf[4];
+    int header = buf[4];
     int ismod;
     int idx = 5;
     if (header == '\x49') {
@@ -105,17 +105,17 @@ struct Info server_query(char ip[], int port)
         get_byte(&info.password, buf[idx], &idx);
         get_byte(&info.secure, buf[idx], &idx);
     } else if (header == '\x6d') {
-                get_string(info.address, buf, &idx);
-                get_string(info.hostname, buf, &idx);
-                get_string(info.map, buf, &idx);
-                get_string(info.gamedir, buf, &idx);
-                get_string(info.gamedesc, buf, &idx);
-                get_byte(&info.numplayers, buf[idx], &idx);
-                get_byte(&info.maxplayers, buf[idx], &idx);
+        get_string(info.address, buf, &idx);
+        get_string(info.hostname, buf, &idx);
+        get_string(info.map, buf, &idx);
+        get_string(info.gamedir, buf, &idx);
+        get_string(info.gamedesc, buf, &idx);
+        get_byte(&info.numplayers, buf[idx], &idx);
+        get_byte(&info.maxplayers, buf[idx], &idx);
         get_byte(&info.protocol, buf[idx], &idx);
-                get_byte(&info.servertype, buf[idx], &idx);
-                get_byte(&info.os, buf[idx], &idx);
-                get_byte(&info.password, buf[idx], &idx);
+        get_byte(&info.servertype, buf[idx], &idx);
+        get_byte(&info.os, buf[idx], &idx);
+        get_byte(&info.password, buf[idx], &idx);
         get_byte(&ismod, buf[idx], &idx);
         if (ismod) {
             get_string(info.link, buf, &idx);
@@ -126,7 +126,7 @@ struct Info server_query(char ip[], int port)
             get_byte(&info.gametype, buf[idx], &idx);
             get_byte(&info.gamedll, buf[idx], &idx);
         }
-                get_byte(&info.secure, buf[idx], &idx);
+        get_byte(&info.secure, buf[idx], &idx);
         get_byte(&info.numbots, buf[idx], &idx);
     }
     sprintf(info.address, "%s:%d", ip, port);
@@ -169,10 +169,10 @@ void main(int argc, char **argv)
     int idx = 6;
     while (idx < res_len) {
         sprintf(ip, "%d.%d.%d.%d",
-                (unsigned char)res[idx],
-                (unsigned char)res[idx+1],
-                (unsigned char)res[idx+2],
-                (unsigned char)res[idx+3]);
+            (unsigned char)res[idx],
+            (unsigned char)res[idx+1],
+            (unsigned char)res[idx+2],
+            (unsigned char)res[idx+3]);
         port = ntohs((res[idx+4] | res[idx+5] << 8));
         
         if (strcmp(ip, "0.0.0.0")) {
